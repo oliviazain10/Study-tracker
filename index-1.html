@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Study Tracker">
+<meta name="theme-color" content="#0D1117">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,400&display=swap');
+
+:root {
+  --bg: #F7F4EF;
+  --surface: #FFFFFF;
+  --surface2: #F0EDE6;
+  --ink: #1A1714;
+  --ink2: #4A4440;
+  --ink3: #8A8480;
+  --border: #E0DDD6;
+  --accent: #2D6A4F;
+  --accent2: #52B788;
+  --accent-light: #D8F3DC;
+  --warn: #E76F51;
+  --warn-light: #FDE8E0;
+  --sky: #457B9D;
+  --sky-light: #E0EEF5;
+  --gold: #E9C46A;
+  --gold-light: #FDF3D0;
+  --purple: #6A4C93;
+  --purple-light: #EDE6F5;
+  --nav-h: 64px;
+  --r: 16px;
+  --font-bn: 'Hind Siliguri', sans-serif;
+  --font-disp: 'Playfair Display', Georgia, serif;
+}
+
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;font-family:var(--font-bn);background:var(--bg);color:var(--ink);font-size:15px;line-height:1.5;overscroll-behavior:none;}
+
+.app{max-width:430px;margin:0 auto;height:100dvh;display:flex;flex-direction:column;background:var(--bg);overflow:hidden;position:relative;}
+
+/* ── HEADER ── */
+.app-header{background:var(--surface);padding:52px 18px 14px;flex-shrink:0;border-bottom:1.5px solid var(--border);position:relative;}
+.hdr-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.hdr-left{display:flex;align-items:center;gap:10px;}
+.logo-wrap{width:34px;height:34px;background:var(--ink);border-radius:10px;display:flex;align-items:center;justify-content:center;}
+.logo-wrap svg{width:20px;height:20px;}
+.app-name{font-family:var(--font-disp);font-size:19px;color:var(--ink);line-height:1;}
+.app-tagline{font-size:10px;color:var(--ink3);margin-top:1px;font-family:var(--font-bn);}
+.profile-btn{width:36px;height:36px;border-radius:50%;background:var(--surface2);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;}
+
+/* readiness pill */
+.rp-pill{background:var(--surface2);border-radius:12px;padding:10px 14px;display:flex;align-items:center;gap:12px;}
+.rp-left{flex:1;}
+.rp-label{font-size:10px;color:var(--ink3);font-weight:600;letter-spacing:.5px;text-transform:uppercase;}
+.rp-nums{display:flex;align-items:baseline;gap:4px;margin:2px 0;}
+.rp-big{font-family:var(--font-disp);font-size:26px;color:var(--ink);line-height:1;}
+.rp-unit{font-size:11px;color:var(--ink3);}
+.rp-bar-wrap{height:6px;background:var(--border);border-radius:6px;overflow:hidden;}
+.rp-bar-fill{height:100%;border-radius:6px;background:linear-gradient(90deg,var(--accent2),var(--sky));transition:width .6s cubic-bezier(.4,0,.2,1);}
+.rp-msg{font-size:11px;color:var(--ink2);margin-top:4px;}
+.rp-streak{text-align:right;}
+.streak-num{font-family:var(--font-disp);font-size:22px;color:var(--warn);line-height:1;}
+.streak-label{font-size:9px;color:var(--ink3);text-transform:uppercase;letter-spacing:.5px;}
+
+/* ── SCROLL ── */
+.scroll-area{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 14px calc(var(--nav-h) + 16px);}
+.scroll-area::-webkit-scrollbar{display:none;}
+.section{display:none;}
+.section.active{display:block;}
+.sec-label{font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--ink3);margin:0 0 10px;display:flex;align-items:center;gap:8px;}
+.sec-label::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* ── CARD ── */
+.card{background:var(--surface);border-radius:var(--r);padding:16px;margin-bottom:12px;border:1.5px solid var(--border);}
+
+/* ── TODAY BANNER ── */
+.today-banner{background:var(--ink);border-radius:var(--r);padding:14px 16px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.tb-date{font-size:12px;color:rgba(255,255,255,.5);margin-bottom:2px;}
+.tb-day{font-family:var(--font-disp);font-size:18px;color:white;}
+.tb-countdown-wrap{text-align:right;}
+.tb-next-label{font-size:10px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.5px;}
+.tb-next-exam{font-size:13px;color:var(--gold);font-weight:600;margin-top:2px;}
+.tb-days-left{font-family:var(--font-disp);font-size:26px;color:white;line-height:1;}
+.tb-dl-unit{font-size:10px;color:rgba(255,255,255,.4);}
+
+/* ── EXAM CARD ── */
+.exam-card{background:var(--surface);border-radius:var(--r);padding:14px 14px 10px;margin-bottom:10px;border:1.5px solid var(--border);position:relative;overflow:hidden;animation:fadeUp .3s ease both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.exam-accent{position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:3px 0 0 3px;}
+.exam-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:10px;}
+.exam-left{flex:1;min-width:0;}
+.subj-pill{display:inline-block;padding:2px 9px;border-radius:20px;font-size:10px;font-weight:700;margin-bottom:5px;letter-spacing:.3px;}
+.exam-topic{font-size:14px;font-weight:600;color:var(--ink);line-height:1.3;}
+.exam-date{font-size:11px;color:var(--ink3);margin-top:3px;}
+.exam-countdown{font-size:11px;font-weight:700;margin-top:2px;}
+.countdown-urgent{color:var(--warn);}
+.countdown-soon{color:var(--gold);}
+.countdown-ok{color:var(--accent);}
+.countdown-past{color:var(--ink3);}
+.st-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:700;flex-shrink:0;}
+.st-dot{width:5px;height:5px;border-radius:50%;}
+.st-done{background:var(--accent-light);color:var(--accent);}
+.st-progress{background:var(--sky-light);color:var(--sky);}
+.st-pending{background:var(--warn-light);color:var(--warn);}
+.st-done .st-dot{background:var(--accent);}
+.st-progress .st-dot{background:var(--sky);}
+.st-pending .st-dot{background:var(--warn);}
+
+/* readiness row */
+.exam-read-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.mini-bar{flex:1;height:5px;background:var(--border);border-radius:5px;overflow:hidden;}
+.mini-fill{height:100%;border-radius:5px;transition:width .4s;}
+.mini-pct{font-size:11px;font-weight:700;color:var(--ink2);width:30px;text-align:right;}
+.rev-box{width:22px;height:22px;border:1.5px solid var(--border);border-radius:6px;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:11px;cursor:pointer;flex-shrink:0;transition:all .15s;}
+.rev-box.on{background:var(--accent);border-color:var(--accent);color:white;}
+
+.exam-notes{font-size:11px;color:var(--ink3);margin-top:6px;padding-top:6px;border-top:1px solid var(--border);}
+.card-actions{display:flex;gap:6px;margin-top:8px;}
+.card-btn{flex:1;padding:7px;border-radius:9px;font-family:var(--font-bn);font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px;border:1.5px solid;transition:all .15s;}
+.card-btn:active{opacity:.7;}
+.btn-edit{color:var(--sky);border-color:var(--sky-light);background:var(--sky-light);}
+.btn-del{color:var(--warn);border-color:var(--warn-light);background:var(--warn-light);}
+
+/* subject colors */
+.s-math{background:#DCEEFB;color:#2C7BB2;}.acc-math{background:#2C7BB2;}
+.s-english{background:#D6F0DF;color:#267347;}.acc-english{background:#267347;}
+.s-science{background:#FFE8D6;color:#C06030;}.acc-science{background:#C06030;}
+.s-bangla{background:#E8E2F5;color:#5A3FA0;}.acc-bangla{background:#5A3FA0;}
+.s-history{background:#FFE4E0;color:#B54040;}.acc-history{background:#B54040;}
+.s-ict{background:#FEF4CC;color:#9A7010;}.acc-ict{background:#9A7010;}
+.s-geo{background:#D6F0F0;color:#1A7A7A;}.acc-geo{background:#1A7A7A;}
+.s-bio{background:#E8F5D6;color:#3A7020;}.acc-bio{background:#3A7020;}
+.s-chem{background:#F0E0F5;color:#7040A0;}.acc-chem{background:#7040A0;}
+.s-phys{background:#D6E8FF;color:#1A4A8A;}.acc-phys{background:#1A4A8A;}
+.s-econ{background:#FFF0D6;color:#8A5000;}.acc-econ{background:#8A5000;}
+.s-custom{background:#EDE8DF;color:#5A4A3A;}.acc-custom{background:#5A4A3A;}
+
+/* ── HABITS ── */
+.habit-item{padding:12px 0;border-bottom:1px solid var(--border);}
+.habit-item:last-child{border-bottom:none;padding-bottom:0;}
+.habit-item:first-child{padding-top:0;}
+.habit-top{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.habit-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+.habit-info{flex:1;}
+.habit-name{font-size:13px;font-weight:700;color:var(--ink);}
+.habit-target{font-size:10px;color:var(--ink3);margin-top:1px;}
+.habit-streak{font-size:10px;font-weight:700;color:var(--warn);background:var(--warn-light);padding:2px 7px;border-radius:20px;}
+.habit-grid{display:flex;gap:4px;align-items:flex-end;}
+.h-day-col{display:flex;flex-direction:column;align-items:center;gap:3px;}
+.h-dot{width:30px;height:30px;border-radius:8px;border:1.5px solid var(--border);background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:transparent;cursor:pointer;transition:all .15s;user-select:none;flex-shrink:0;}
+.h-dot.on{background:var(--accent);border-color:var(--accent);color:white;}
+.h-dot.today-dot{border-color:var(--sky);box-shadow:0 0 0 1.5px var(--sky);}
+.h-dot.on.today-dot{background:var(--accent);border-color:var(--accent);}
+.h-dot:active{transform:scale(.87);}
+.day-lbl{font-size:8px;color:var(--ink3);font-weight:600;text-align:center;width:30px;}
+.today-lbl{color:var(--sky);font-weight:700;}
+.habit-acts{display:flex;gap:6px;margin-top:8px;}
+.h-act{font-size:11px;font-weight:700;padding:4px 10px;border-radius:8px;border:1.5px solid;cursor:pointer;font-family:var(--font-bn);}
+.h-act:active{opacity:.7;}
+.h-edit{color:var(--sky);border-color:var(--sky-light);background:var(--sky-light);}
+.h-del{color:var(--warn);border-color:var(--warn-light);background:var(--warn-light);}
+.add-habit-btn{width:100%;padding:11px;border:1.5px dashed var(--border);border-radius:12px;background:transparent;font-family:var(--font-bn);font-size:13px;font-weight:600;color:var(--ink3);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;margin-top:4px;}
+.add-habit-btn:active{background:var(--surface2);}
+
+/* ── PROGRESS ── */
+.ov-wrap{display:flex;align-items:center;gap:16px;margin-bottom:16px;}
+.radial-svg{width:88px;height:88px;flex-shrink:0;}
+.ov-big{font-family:var(--font-disp);font-size:34px;color:var(--ink);line-height:1;}
+.ov-label{font-size:11px;color:var(--ink3);margin-top:3px;}
+.ov-msg{font-size:12px;font-weight:600;color:var(--accent);margin-top:4px;}
+.subj-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.subj-row:last-child{margin-bottom:0;}
+.subj-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+.subj-name{font-size:12px;color:var(--ink2);width:80px;flex-shrink:0;}
+.subj-bar{flex:1;height:7px;background:var(--border);border-radius:7px;overflow:hidden;}
+.subj-fill{height:100%;border-radius:7px;transition:width .5s;}
+.subj-pct{font-size:11px;font-weight:700;color:var(--ink2);width:32px;text-align:right;}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;}
+.stat-box{background:var(--surface2);border-radius:10px;padding:12px;text-align:center;}
+.stat-num{font-family:var(--font-disp);font-size:24px;color:var(--ink);line-height:1;}
+.stat-label{font-size:10px;color:var(--ink3);margin-top:3px;}
+
+/* ── PROFILE ── */
+.info-field{margin-bottom:12px;}
+.info-field:last-child{margin-bottom:0;}
+.info-field label{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--ink3);display:block;margin-bottom:4px;}
+.info-input,.info-select{width:100%;background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;padding:10px 13px;font-family:var(--font-bn);font-size:14px;color:var(--ink);outline:none;transition:border-color .15s;appearance:none;}
+.info-input:focus,.info-select:focus{border-color:var(--accent);}
+.info-input::placeholder{color:var(--border);}
+
+/* ── QUOTE ── */
+.quote-card{background:var(--ink);border-radius:var(--r);padding:18px;margin-bottom:12px;position:relative;overflow:hidden;}
+.quote-card::before{content:'"';position:absolute;top:-20px;left:8px;font-family:var(--font-disp);font-size:120px;line-height:1;color:rgba(255,255,255,.06);pointer-events:none;}
+.q-text{font-family:var(--font-disp);font-size:14px;font-style:italic;color:rgba(255,255,255,.85);line-height:1.6;}
+.q-attr{font-size:11px;color:rgba(255,255,255,.35);margin-top:8px;}
+
+/* ── FAB ── */
+.fab{position:fixed;bottom:calc(var(--nav-h)+14px);left:max(14px,calc(50% - 197px));width:44px;height:44px;background:var(--ink);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;color:white;cursor:pointer;border:none;z-index:50;box-shadow:0 4px 18px rgba(26,23,20,.25);}
+.fab:active{opacity:.8;}
+
+/* ── BOTTOM NAV ── */
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;height:var(--nav-h);background:var(--surface);border-top:1.5px solid var(--border);display:flex;align-items:center;padding:0 4px 8px;z-index:100;}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:6px 4px 3px;cursor:pointer;border:none;background:transparent;border-radius:12px;}
+.nav-item:active{background:var(--surface2);}
+.nav-icon{font-size:20px;line-height:1;}
+.nav-label{font-size:9px;font-weight:700;color:var(--ink3);letter-spacing:.3px;font-family:var(--font-bn);}
+.nav-item.active .nav-label{color:var(--accent);}
+.nav-dot{width:4px;height:4px;border-radius:50%;background:var(--accent);opacity:0;transition:opacity .15s;margin-bottom:1px;}
+.nav-item.active .nav-dot{opacity:1;}
+
+/* ── OVERLAY + SHEET ── */
+.overlay{position:fixed;inset:0;background:rgba(26,23,20,.4);z-index:200;opacity:0;pointer-events:none;transition:opacity .25s;}
+.overlay.open{opacity:1;pointer-events:all;}
+.sheet{position:fixed;bottom:0;left:50%;transform:translateX(-50%) translateY(100%);width:100%;max-width:430px;background:var(--surface);border-radius:22px 22px 0 0;padding:12px 18px 36px;z-index:201;transition:transform .3s cubic-bezier(.34,1.36,.64,1);max-height:90dvh;overflow-y:auto;}
+.sheet.open{transform:translateX(-50%) translateY(0);}
+.s-handle{width:36px;height:3px;background:var(--border);border-radius:10px;margin:0 auto 16px;}
+.s-title-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.s-title{font-family:var(--font-disp);font-size:20px;color:var(--ink);}
+.s-del-btn{background:var(--warn-light);border:1.5px solid var(--warn);color:var(--warn);font-size:12px;font-weight:700;padding:5px 11px;border-radius:8px;cursor:pointer;font-family:var(--font-bn);}
+.s-field{margin-bottom:13px;}
+.s-field label{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--ink3);display:block;margin-bottom:5px;}
+.s-input,.s-select,.s-textarea{width:100%;background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;padding:11px 13px;font-family:var(--font-bn);font-size:14px;color:var(--ink);outline:none;appearance:none;transition:border-color .15s;}
+.s-input:focus,.s-select:focus,.s-textarea:focus{border-color:var(--accent);}
+.s-input::placeholder,.s-textarea::placeholder{color:var(--border);}
+.s-textarea{resize:none;height:70px;line-height:1.5;}
+.s-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.s-btn{width:100%;padding:13px;background:var(--ink);color:white;font-family:var(--font-bn);font-size:14px;font-weight:700;border:none;border-radius:10px;cursor:pointer;margin-top:4px;}
+.s-btn:active{opacity:.85;}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:5px;background:var(--border);border-radius:5px;outline:none;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--ink);cursor:pointer;border:3px solid white;box-shadow:0 1px 6px rgba(26,23,20,.2);}
+.emoji-row{display:flex;gap:6px;flex-wrap:wrap;}
+.e-opt{width:36px;height:36px;border-radius:9px;border:1.5px solid var(--border);background:var(--surface2);font-size:17px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;}
+.e-opt.sel{border-color:var(--accent);background:var(--accent-light);}
+.color-row{display:flex;gap:7px;flex-wrap:wrap;}
+.c-opt{width:26px;height:26px;border-radius:50%;border:2.5px solid transparent;cursor:pointer;transition:all .15s;}
+.c-opt.sel{border-color:var(--ink);transform:scale(1.15);}
+.s-subj-note{font-size:11px;color:var(--ink3);margin-top:4px;}
+
+/* subject add */
+.custom-subj-row{display:flex;gap:8px;align-items:center;margin-top:8px;}
+.custom-subj-row .s-input{flex:1;}
+.add-subj-btn{padding:11px 14px;background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;font-family:var(--font-bn);font-size:13px;font-weight:700;color:var(--ink2);cursor:pointer;white-space:nowrap;}
+.add-subj-btn:active{background:var(--border);}
+.custom-subjs{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+.cs-tag{display:inline-flex;align-items:center;gap:5px;background:var(--surface2);border:1.5px solid var(--border);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:600;color:var(--ink2);}
+.cs-tag button{background:none;border:none;font-size:13px;line-height:1;cursor:pointer;color:var(--ink3);padding:0;}
+
+/* ── EMPTY / TOAST ── */
+.empty-state{text-align:center;padding:32px 20px;color:var(--ink3);}
+.empty-icon{font-size:40px;margin-bottom:8px;}
+.empty-text{font-size:13px;line-height:1.6;}
+.toast{position:fixed;bottom:calc(var(--nav-h)+10px);left:50%;transform:translateX(-50%) translateY(16px);background:var(--ink);color:white;font-size:12px;font-weight:600;padding:9px 16px;border-radius:20px;opacity:0;pointer-events:none;transition:all .2s;white-space:nowrap;z-index:400;font-family:var(--font-bn);}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* ── NOTIFICATION BADGE ── */
+.notif-btn{position:relative;}
+.notif-badge{position:absolute;top:-2px;right:-2px;width:8px;height:8px;background:var(--warn);border-radius:50%;border:1.5px solid var(--surface);}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="app-header">
+    <div class="hdr-row">
+      <div class="hdr-left">
+        <div class="logo-wrap">
+          <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 4h14v10H3z" fill="none" stroke="#E9C46A" stroke-width="1.5" stroke-linejoin="round"/>
+            <path d="M7 4v10M10 2v2M10 16v2" stroke="#E9C46A" stroke-width="1.5" stroke-linecap="round"/>
+            <circle cx="15" cy="15" r="4" fill="#52B788"/>
+            <path d="M13.5 15l1 1 2-2" stroke="white" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div>
+          <div class="app-name">Study Tracker</div>
+          <div class="app-tagline">পরীক্ষার প্রস্তুতি ট্র্যাক করো</div>
+        </div>
+      </div>
+      <button class="profile-btn notif-btn" id="notifBtn" onclick="showSection('profile')" title="Profile">👤</button>
+    </div>
+    <div class="rp-pill">
+      <div class="rp-left">
+        <div class="rp-label">সার্বিক প্রস্তুতি</div>
+        <div class="rp-nums"><span class="rp-big" id="hPct">—</span><span class="rp-unit">%</span></div>
+        <div class="rp-bar-wrap"><div class="rp-bar-fill" id="hBar" style="width:0%"></div></div>
+        <div class="rp-msg" id="hMsg">Exam যোগ করো</div>
+      </div>
+      <div class="rp-streak">
+        <div class="streak-num" id="headerStreak">0</div>
+        <div class="streak-label">🔥 streak</div>
+      </div>
+    </div>
+  </header>
+
+  <div class="scroll-area" id="scrollArea">
+
+    <!-- HOME -->
+    <section class="section active" id="sec-home">
+      <div id="todayBanner"></div>
+      <div class="sec-label">📋 পরীক্ষার তালিকা</div>
+      <div id="examList"></div>
+      <div class="quote-card" id="motivQuote"></div>
+    </section>
+
+    <!-- HABITS -->
+    <section class="section" id="sec-habits">
+      <div class="sec-label">⚡ আজকের Habits</div>
+      <div class="card" id="habitList"></div>
+      <button class="add-habit-btn" onclick="openHabitSheet(null)">＋ &nbsp;নতুন Habit যোগ করো</button>
+    </section>
+
+    <!-- PROGRESS -->
+    <section class="section" id="sec-progress">
+      <div class="sec-label">📊 প্রস্তুতির অগ্রগতি</div>
+      <div class="card">
+        <div class="ov-wrap">
+          <svg class="radial-svg" viewBox="0 0 88 88">
+            <circle cx="44" cy="44" r="34" fill="none" stroke="var(--border)" stroke-width="8"/>
+            <circle id="radialC" cx="44" cy="44" r="34" fill="none" stroke="url(#rg)" stroke-width="8"
+              stroke-linecap="round" stroke-dasharray="213.6" stroke-dashoffset="213.6" transform="rotate(-90 44 44)"/>
+            <defs><linearGradient id="rg" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#52B788"/><stop offset="100%" stop-color="#457B9D"/>
+            </linearGradient></defs>
+            <text id="radialT" x="44" y="49" text-anchor="middle" font-family="'Playfair Display',Georgia,serif" font-size="16" fill="#1A1714">—</text>
+          </svg>
+          <div>
+            <div class="ov-big" id="ovBig">—</div>
+            <div class="ov-label">সার্বিক প্রস্তুতি</div>
+            <div class="ov-msg" id="ovMsg">Exam যোগ করো</div>
+          </div>
+        </div>
+        <div id="subjProgress"></div>
+        <div class="stats-grid" id="statsGrid"></div>
+      </div>
+    </section>
+
+    <!-- PROFILE -->
+    <section class="section" id="sec-profile">
+      <div class="sec-label">👤 শিক্ষার্থীর তথ্য</div>
+      <div class="card">
+        <div class="info-field"><label>পুরো নাম</label><input class="info-input" id="pName" type="text" placeholder="তোমার নাম লিখো…" oninput="saveProfile()"></div>
+        <div class="info-field"><label>শ্রেণি / বিভাগ</label><input class="info-input" id="pClass" type="text" placeholder="Class 10 — A" oninput="saveProfile()"></div>
+        <div class="info-field"><label>বিভাগ</label>
+          <select class="info-select" id="pGroup" onchange="saveProfile()">
+            <option value="">বেছে নাও…</option>
+            <option value="science">বিজ্ঞান</option>
+            <option value="commerce">বাণিজ্য</option>
+            <option value="arts">মানবিক</option>
+            <option value="other">অন্যান্য</option>
+          </select>
+        </div>
+        <div class="info-field"><label>বিদ্যালয়</label><input class="info-input" id="pSchool" type="text" placeholder="স্কুল/কলেজের নাম…" oninput="saveProfile()"></div>
+        <div class="info-field"><label>পরীক্ষার বছর</label><input class="info-input" id="pYear" type="text" value="2025" oninput="saveProfile()"></div>
+      </div>
+      <div class="sec-label" style="margin-top:4px;">🔔 নোটিফিকেশন</div>
+      <div class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <div>
+            <div style="font-size:13px;font-weight:600;color:var(--ink);">Habit Reminder</div>
+            <div style="font-size:11px;color:var(--ink3);margin-top:2px;">প্রতিদিন মনে করিয়ে দেবে</div>
+          </div>
+          <label style="position:relative;display:inline-block;width:42px;height:24px;">
+            <input type="checkbox" id="notifToggle" onchange="toggleNotif()" style="opacity:0;width:0;height:0;">
+            <span id="notifSlider" style="position:absolute;cursor:pointer;inset:0;background:var(--border);border-radius:24px;transition:.3s;"></span>
+          </label>
+        </div>
+        <div id="notifTimeRow" style="display:none;">
+          <div class="info-field" style="margin-bottom:0;">
+            <label>রিমাইন্ডার সময়</label>
+            <input class="info-input" type="time" id="notifTime" value="20:00" onchange="saveNotifSettings()">
+          </div>
+        </div>
+        <div style="font-size:11px;color:var(--ink3);margin-top:8px;" id="notifStatus">নোটিফিকেশন বন্ধ আছে</div>
+      </div>
+      <div class="quote-card" style="background:var(--accent);">
+        <div class="q-text" style="color:rgba(255,255,255,.9);">"পরিশ্রম ও অধ্যবসায় দিয়ে জয় করা যায় না এমন কিছু নেই।"</div>
+        <div class="q-attr">— বাংলা প্রবাদ</div>
+      </div>
+    </section>
+
+  </div>
+
+  <button class="fab" id="fabBtn" onclick="openExamSheet(null)">＋</button>
+
+  <nav class="bottom-nav">
+    <button class="nav-item active" id="nav-home"     onclick="showSection('home')">    <div class="nav-dot"></div><div class="nav-icon">🏠</div><div class="nav-label">হোম</div></button>
+    <button class="nav-item"        id="nav-habits"   onclick="showSection('habits')">  <div class="nav-dot"></div><div class="nav-icon">⚡</div><div class="nav-label">Habits</div></button>
+    <button class="nav-item"        id="nav-progress" onclick="showSection('progress')"><div class="nav-dot"></div><div class="nav-icon">📊</div><div class="nav-label">অগ্রগতি</div></button>
+    <button class="nav-item"        id="nav-profile"  onclick="showSection('profile')"> <div class="nav-dot"></div><div class="nav-icon">👤</div><div class="nav-label">প্রোফাইল</div></button>
+  </nav>
+</div>
+
+<div class="overlay" id="overlay" onclick="closeSheet()"></div>
+
+<!-- EXAM SHEET -->
+<div class="sheet" id="examSheet">
+  <div class="s-handle"></div>
+  <div class="s-title-row">
+    <div class="s-title" id="eSheetTitle">নতুন পরীক্ষা</div>
+    <button class="s-del-btn" id="eDelBtn" style="display:none" onclick="deleteFromExamSheet()">🗑 মুছো</button>
+  </div>
+  <div class="s-row">
+    <div class="s-field"><label>📅 পরীক্ষার তারিখ</label><input class="s-input" type="date" id="eDate"></div>
+    <div class="s-field"><label>⚡ অবস্থা</label>
+      <select class="s-select" id="eStat">
+        <option value="pending">বাকি আছে</option>
+        <option value="progress">পড়ছি</option>
+        <option value="done">শেষ ✓</option>
+      </select>
+    </div>
+  </div>
+  <div class="s-field">
+    <label>📚 বিষয়</label>
+    <select class="s-select" id="eSubj"></select>
+  </div>
+  <div class="s-field"><label>🗒 টপিক / অধ্যায়</label><input class="s-input" type="text" id="eTopic" placeholder="যেমন: অ্যালজেব্রা ও ফাংশন"></div>
+  <div class="s-field">
+    <label>📊 প্রস্তুতি — <span id="eRV">50</span>%</label>
+    <input type="range" min="0" max="100" value="50" id="eRead" oninput="document.getElementById('eRV').textContent=this.value">
+  </div>
+  <div class="s-field"><label>🖊 নোট</label><textarea class="s-textarea" id="eNotes" placeholder="ছোট নোট লিখতে পারো…"></textarea></div>
+  <button class="s-btn" id="eSaveBtn" onclick="saveExam()">পরীক্ষা সেভ করো ✓</button>
+</div>
+
+<!-- HABIT SHEET -->
+<div class="sheet" id="habitSheet">
+  <div class="s-handle"></div>
+  <div class="s-title-row">
+    <div class="s-title" id="hSheetTitle">নতুন Habit</div>
+    <button class="s-del-btn" id="hDelBtn" style="display:none" onclick="deleteFromHabitSheet()">🗑 মুছো</button>
+  </div>
+  <div class="s-field"><label>📛 Habit-এর নাম</label><input class="s-input" type="text" id="hName" placeholder="যেমন: পড়ার সময়"></div>
+  <div class="s-field"><label>🎯 দৈনিক লক্ষ্য</label><input class="s-input" type="text" id="hTarget" placeholder="যেমন: ৩ ঘণ্টা/দিন"></div>
+  <div class="s-field">
+    <label>😊 আইকন</label>
+    <div class="emoji-row" id="ePicker">
+      <div class="e-opt sel" data-e="📖" onclick="pickE(this)">📖</div>
+      <div class="e-opt" data-e="🔁" onclick="pickE(this)">🔁</div>
+      <div class="e-opt" data-e="📝" onclick="pickE(this)">📝</div>
+      <div class="e-opt" data-e="🧠" onclick="pickE(this)">🧠</div>
+      <div class="e-opt" data-e="🏃" onclick="pickE(this)">🏃</div>
+      <div class="e-opt" data-e="💪" onclick="pickE(this)">💪</div>
+      <div class="e-opt" data-e="🎯" onclick="pickE(this)">🎯</div>
+      <div class="e-opt" data-e="⏰" onclick="pickE(this)">⏰</div>
+      <div class="e-opt" data-e="🌙" onclick="pickE(this)">🌙</div>
+      <div class="e-opt" data-e="☀️" onclick="pickE(this)">☀️</div>
+      <div class="e-opt" data-e="🎵" onclick="pickE(this)">🎵</div>
+      <div class="e-opt" data-e="🧘" onclick="pickE(this)">🧘</div>
+    </div>
+  </div>
+  <div class="s-field">
+    <label>🎨 রঙ</label>
+    <div class="color-row" id="cPicker">
+      <div class="c-opt sel" data-c="#E8F4FC" onclick="pickC(this)" style="background:#E8F4FC;border:2px solid #C8DFF0"></div>
+      <div class="c-opt" data-c="#D8F3DC" onclick="pickC(this)" style="background:#D8F3DC;border:2px solid #B8E8C0"></div>
+      <div class="c-opt" data-c="#FFE8D6" onclick="pickC(this)" style="background:#FFE8D6;border:2px solid #FFD0B0"></div>
+      <div class="c-opt" data-c="#E8E2F5" onclick="pickC(this)" style="background:#E8E2F5;border:2px solid #D0C8E8"></div>
+      <div class="c-opt" data-c="#FFE4E0" onclick="pickC(this)" style="background:#FFE4E0;border:2px solid #FFC8C0"></div>
+      <div class="c-opt" data-c="#FEF4CC" onclick="pickC(this)" style="background:#FEF4CC;border:2px solid #F0E090"></div>
+      <div class="c-opt" data-c="#F0EDE6" onclick="pickC(this)" style="background:#F0EDE6;border:2px solid #D8D4C8"></div>
+    </div>
+  </div>
+  <button class="s-btn" id="hSaveBtn" onclick="saveHabit()">Habit সেভ করো ✓</button>
+</div>
+
+<!-- SUBJECT MANAGER SHEET -->
+<div class="sheet" id="subjSheet">
+  <div class="s-handle"></div>
+  <div class="s-title-row">
+    <div class="s-title">বিষয় ব্যবস্থাপনা</div>
+    <button class="s-del-btn" style="display:block;background:var(--surface2);border-color:var(--border);color:var(--ink2);" onclick="closeSheet()">✕ বন্ধ</button>
+  </div>
+  <div style="font-size:12px;color:var(--ink3);margin-bottom:12px;">কাস্টম বিষয় যোগ বা সরিয়ে নিতে পারো।</div>
+  <div id="builtinSubjList"></div>
+  <div class="custom-subj-row">
+    <input class="s-input" type="text" id="newSubjInput" placeholder="নতুন বিষয়ের নাম…" style="flex:1;">
+    <button class="add-subj-btn" onclick="addCustomSubj()">＋ যোগ করো</button>
+  </div>
+  <div class="custom-subjs" id="customSubjList"></div>
+  <button class="s-btn" style="margin-top:14px;" onclick="applySubjects()">ঠিক আছে ✓</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ════════════════════════════════
+   STUDY TRACKER — Full Version
+   ════════════════════════════════ */
+
+// ── QUOTES ──
+const QUOTES = [
+  {text:"পরিশ্রমই সাফল্যের চাবিকাঠি।",attr:"বাংলা প্রবাদ"},
+  {text:"Success is the sum of small efforts, repeated day in and day out.",attr:"Robert Collier"},
+  {text:"The secret of getting ahead is getting started.",attr:"Mark Twain"},
+  {text:"একটু একটু করে পড়লেই পরীক্ষায় বড় ফল আসে।",attr:""},
+  {text:"Don't watch the clock; do what it does. Keep going.",attr:"Sam Levenson"},
+  {text:"Education is not preparation for life; education is life itself.",attr:"John Dewey"},
+  {text:"পরীক্ষার দিন যত কাছে আসবে, প্রস্তুতি তত মজবুত করো।",attr:""},
+  {text:"It always seems impossible until it's done.",attr:"Nelson Mandela"},
+];
+
+// ── BUILT-IN SUBJECTS ──
+const BUILTIN_SUBJS = [
+  {key:'math',    label:'গণিত',      pill:'s-math',    acc:'acc-math',    color:'#2C7BB2'},
+  {key:'english', label:'ইংরেজি',    pill:'s-english', acc:'acc-english', color:'#267347'},
+  {key:'bangla',  label:'বাংলা',     pill:'s-bangla',  acc:'acc-bangla',  color:'#5A3FA0'},
+  {key:'science', label:'বিজ্ঞান',   pill:'s-science', acc:'acc-science', color:'#C06030'},
+  {key:'phys',    label:'পদার্থবিজ্ঞান',pill:'s-phys', acc:'acc-phys',   color:'#1A4A8A'},
+  {key:'chem',    label:'রসায়ন',    pill:'s-chem',    acc:'acc-chem',    color:'#7040A0'},
+  {key:'bio',     label:'জীববিজ্ঞান',pill:'s-bio',    acc:'acc-bio',     color:'#3A7020'},
+  {key:'history', label:'ইতিহাস',    pill:'s-history', acc:'acc-history', color:'#B54040'},
+  {key:'geo',     label:'ভূগোল',     pill:'s-geo',     acc:'acc-geo',     color:'#1A7A7A'},
+  {key:'ict',     label:'ICT',        pill:'s-ict',     acc:'acc-ict',     color:'#9A7010'},
+  {key:'econ',    label:'অর্থনীতি', pill:'s-econ',    acc:'acc-econ',    color:'#8A5000'},
+];
+
+const ST = {
+  done:     {label:'শেষ ✓',    cls:'st-done'},
+  progress: {label:'পড়ছি',   cls:'st-progress'},
+  pending:  {label:'বাকি',    cls:'st-pending'},
+};
+
+// ── DATA ──
+let exams = [], habits = [], eID = 10, hID = 10;
+let activeSubjKeys = []; // which builtin subjects are active
+let customSubjects = []; // [{key,label}]
+let tempActiveKeys = [], tempCustomSubjs = [];
+
+const DEFAULT_EXAMS = [
+  {id:1,date:'2025-06-15',subject:'math',    topic:'বীজগণিত ও ফাংশন',      status:'progress',readiness:60,revised:false,notes:'সূত্রগুলো রিভিশন দাও'},
+  {id:2,date:'2025-06-18',subject:'bangla',  topic:'পদ্য ও গদ্য বিশ্লেষণ', status:'pending', readiness:25,revised:false,notes:''},
+  {id:3,date:'2025-06-20',subject:'english', topic:'Essay Writing & Grammar',status:'pending', readiness:40,revised:false,notes:'Mock essay শেষ করো'},
+  {id:4,date:'2025-06-22',subject:'science', topic:'নিউটনের সূত্র ও গতি',  status:'done',    readiness:85,revised:true, notes:'ডায়াগ্রাম practice'},
+  {id:5,date:'2025-06-25',subject:'ict',     topic:'Database & Networking',   status:'pending', readiness:15,revised:false,notes:''},
+];
+const DEFAULT_HABITS = [
+  {id:1,name:'পড়ার সময়',   target:'৪ ঘণ্টা/দিন', emoji:'📖',color:'#E8F4FC',week:{},streak:0},
+  {id:2,name:'রিভিশন',      target:'১ ঘণ্টা/দিন', emoji:'🔁',color:'#D8F3DC',week:{},streak:0},
+  {id:3,name:'প্র্যাকটিস টেস্ট',target:'১টা/দিন', emoji:'📝',color:'#FFE8D6',week:{},streak:0},
+  {id:4,name:'ফ্ল্যাশকার্ড', target:'২০ মিনিট/দিন',emoji:'🧠',color:'#E8E2F5',week:{},streak:0},
+];
+const DEFAULT_ACTIVE_SUBJS = ['math','english','bangla','science','ict'];
+
+function loadData(){
+  try{
+    const se=localStorage.getItem('st_exams2');
+    const sh=localStorage.getItem('st_habits2');
+    const si=localStorage.getItem('st_ids2');
+    const sk=localStorage.getItem('st_subjkeys');
+    const sc=localStorage.getItem('st_customsubj');
+    exams  = se ? JSON.parse(se) : [...DEFAULT_EXAMS];
+    habits = sh ? JSON.parse(sh) : DEFAULT_HABITS.map(h=>({...h,week:{...h.week}}));
+    if(si){const ids=JSON.parse(si);eID=ids.eID;hID=ids.hID;}
+    activeSubjKeys = sk ? JSON.parse(sk) : [...DEFAULT_ACTIVE_SUBJS];
+    customSubjects = sc ? JSON.parse(sc) : [];
+  }catch(e){
+    exams=[...DEFAULT_EXAMS];
+    habits=DEFAULT_HABITS.map(h=>({...h,week:{...h.week}}));
+    activeSubjKeys=[...DEFAULT_ACTIVE_SUBJS];
+    customSubjects=[];
+  }
+}
+function saveData(){
+  try{
+    localStorage.setItem('st_exams2',JSON.stringify(exams));
+    localStorage.setItem('st_habits2',JSON.stringify(habits));
+    localStorage.setItem('st_ids2',JSON.stringify({eID,hID}));
+    localStorage.setItem('st_subjkeys',JSON.stringify(activeSubjKeys));
+    localStorage.setItem('st_customsubj',JSON.stringify(customSubjects));
+  }catch(e){}
+}
+function loadProfile(){
+  try{
+    const sp=localStorage.getItem('st_profile2');
+    if(sp){
+      const p=JSON.parse(sp);
+      ['pName','pClass','pSchool','pYear'].forEach(id=>{
+        const el=document.getElementById(id);
+        if(el&&p[id]!==undefined)el.value=p[id];
+      });
+      const grp=document.getElementById('pGroup');
+      if(grp&&p.pGroup)grp.value=p.pGroup;
+    }
+  }catch(e){}
+}
+function saveProfile(){
+  try{
+    const p={};
+    ['pName','pClass','pSchool','pYear'].forEach(id=>{
+      const el=document.getElementById(id);if(el)p[id]=el.value;
+    });
+    const grp=document.getElementById('pGroup');
+    if(grp)p.pGroup=grp.value;
+    localStorage.setItem('st_profile2',JSON.stringify(p));
+  }catch(e){}
+}
+
+// ── DATE HELPERS ──
+function todayKey(){
+  const d=new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function weekKeys(){
+  // Returns array of 7 date keys, starting Monday of current week
+  const today=new Date();
+  const day=today.getDay(); // 0=Sun
+  const mon=new Date(today);
+  mon.setDate(today.getDate()-(day===0?6:day-1));
+  return Array.from({length:7},(_,i)=>{
+    const d=new Date(mon);d.setDate(mon.getDate()+i);
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  });
+}
+function todayIdx(){
+  // Index (0=Mon..6=Sun) of today within current week
+  const day=new Date().getDay();
+  return day===0?6:day-1;
+}
+const BN_DAYS=['সোম','মঙ্গল','বুধ','বৃহঃ','শুক্র','শনি','রবি'];
+function fd(s){
+  if(!s)return'—';
+  const d=new Date(s+'T00:00:00');
+  return d.toLocaleDateString('bn-BD',{day:'numeric',month:'short',year:'numeric'});
+}
+function daysLeft(dateStr){
+  if(!dateStr)return null;
+  const exam=new Date(dateStr+'T00:00:00');
+  const today=new Date();today.setHours(0,0,0,0);
+  return Math.round((exam-today)/(1000*60*60*24));
+}
+function countdownLabel(days){
+  if(days===null)return{text:'',cls:''};
+  if(days<0)return{text:`${Math.abs(days)} দিন আগে ছিল`,cls:'countdown-past'};
+  if(days===0)return{text:'আজকেই পরীক্ষা! 🚨',cls:'countdown-urgent'};
+  if(days===1)return{text:'আগামীকাল পরীক্ষা! ⚠️',cls:'countdown-urgent'};
+  if(days<=3)return{text:`মাত্র ${days} দিন বাকি`,cls:'countdown-urgent'};
+  if(days<=7)return{text:`${days} দিন বাকি`,cls:'countdown-soon'};
+  return{text:`${days} দিন বাকি`,cls:'countdown-ok'};
+}
+
+// ── SUBJECT HELPERS ──
+function getAllSubjects(){
+  const actBuiltin=BUILTIN_SUBJS.filter(s=>activeSubjKeys.includes(s.key));
+  const customs=customSubjects.map(s=>({
+    key:s.key,label:s.label,pill:'s-custom',acc:'acc-custom',color:'#5A4A3A'
+  }));
+  return [...actBuiltin,...customs];
+}
+function getSubject(key){
+  return getAllSubjects().find(s=>s.key===key)||{label:key,pill:'s-custom',acc:'acc-custom',color:'#5A4A3A'};
+}
+function fillSubjectSelect(selId,currentVal){
+  const sel=document.getElementById(selId);if(!sel)return;
+  sel.innerHTML=getAllSubjects().map(s=>`<option value="${s.key}">${s.label}</option>`).join('');
+  if(currentVal)sel.value=currentVal;
+}
+
+// ── TODAY BANNER ──
+function renderTodayBanner(){
+  const bn=document.getElementById('todayBanner');
+  const today=new Date();
+  const days=['রবিবার','সোমবার','মঙ্গলবার','বুধবার','বৃহস্পতিবার','শুক্রবার','শনিবার'];
+  const months=['জানুয়ারি','ফেব্রুয়ারি','মার্চ','এপ্রিল','মে','জুন','জুলাই','আগস্ট','সেপ্টেম্বর','অক্টোবর','নভেম্বর','ডিসেম্বর'];
+  const dayName=days[today.getDay()];
+  const dateStr=`${today.getDate()} ${months[today.getMonth()]}`;
+
+  // Find next upcoming exam
+  const tk=todayKey();
+  const upcoming=exams.filter(e=>e.date>=tk).sort((a,b)=>a.date.localeCompare(b.date));
+  let rightHtml='';
+  if(upcoming.length){
+    const next=upcoming[0];
+    const dl=daysLeft(next.date);
+    const subj=getSubject(next.subject);
+    if(dl===0){
+      rightHtml=`<div class="tb-countdown-wrap"><div class="tb-next-label">আজকে পরীক্ষা</div><div class="tb-next-exam">${subj.label}</div><div style="font-size:11px;color:rgba(255,255,255,.5);">🚨 All the best!</div></div>`;
+    } else {
+      rightHtml=`<div class="tb-countdown-wrap"><div class="tb-next-label">পরবর্তী পরীক্ষা</div><div class="tb-next-exam">${subj.label}</div><div class="tb-days-left">${dl}<span class="tb-dl-unit"> দিন</span></div></div>`;
+    }
+  } else {
+    rightHtml=`<div class="tb-countdown-wrap"><div class="tb-next-label">কোনো আসন্ন পরীক্ষা নেই</div><div style="font-size:20px;margin-top:4px;">🎉</div></div>`;
+  }
+
+  bn.innerHTML=`<div class="today-banner">
+    <div><div class="tb-date">${dateStr}</div><div class="tb-day">${dayName}</div></div>
+    ${rightHtml}
+  </div>`;
+}
+
+// ── MOTIVATIONAL QUOTE ──
+function renderQuote(){
+  const el=document.getElementById('motivQuote');
+  const q=QUOTES[Math.floor(Math.random()*QUOTES.length)];
+  el.innerHTML=`<div class="q-text">"${q.text}"</div>${q.attr?`<div class="q-attr">— ${q.attr}</div>`:''}`;
+}
+
+// ── RENDER EXAMS ──
+function renderExams(){
+  const el=document.getElementById('examList');
+  if(!exams.length){
+    el.innerHTML=`<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-text">এখনো কোনো পরীক্ষা যোগ করোনি।<br><b>＋</b> বাটন চাপো!</div></div>`;
+    updateProgress();return;
+  }
+  const tk=todayKey();
+  el.innerHTML=[...exams].sort((a,b)=>a.date.localeCompare(b.date)).map((e,i)=>{
+    const s=getSubject(e.subject),st=ST[e.status]||ST.pending;
+    const dl=daysLeft(e.date);
+    const cd=countdownLabel(dl);
+    const fillColor=e.readiness>=70?'var(--accent2)':e.readiness>=40?'var(--gold)':'var(--warn)';
+    return `<div class="exam-card" style="animation-delay:${i*.04}s">
+      <div class="exam-accent ${s.acc}"></div>
+      <div class="exam-top">
+        <div class="exam-left">
+          <span class="subj-pill ${s.pill}">${s.label}</span>
+          <div class="exam-topic">${e.topic}</div>
+          <div class="exam-date">📅 ${fd(e.date)}</div>
+          ${cd.text?`<div class="exam-countdown ${cd.cls}">${cd.text}</div>`:''}
+        </div>
+        <span class="st-badge ${st.cls}"><span class="st-dot"></span>${st.label}</span>
+      </div>
+      <div class="exam-read-row">
+        <div class="mini-bar"><div class="mini-fill" style="width:${e.readiness}%;background:${fillColor}"></div></div>
+        <span class="mini-pct">${e.readiness}%</span>
+        <div class="rev-box${e.revised?' on':''}" onclick="toggleRev(${e.id},this)" title="রিভিশন করা হয়েছে?">${e.revised?'✓':''}</div>
+      </div>
+      ${e.notes?`<div class="exam-notes">📝 ${e.notes}</div>`:''}
+      <div class="card-actions">
+        <button class="card-btn btn-edit" onclick="openExamSheet(${e.id})">✏️ এডিট</button>
+        <button class="card-btn btn-del"  onclick="delExam(${e.id})">🗑 মুছো</button>
+      </div>
+    </div>`;
+  }).join('');
+  updateProgress();
+  renderTodayBanner();
+}
+function toggleRev(id,el){
+  const e=exams.find(x=>x.id===id);if(!e)return;
+  e.revised=!e.revised;el.classList.toggle('on',e.revised);
+  el.textContent=e.revised?'✓':'';saveData();
+  toast(e.revised?'✅ রিভিশন করা হয়েছে':'↩ রিভিশন বাতিল');
+}
+function delExam(id){
+  if(!confirm('এই পরীক্ষা মুছে ফেলবে?'))return;
+  exams=exams.filter(e=>e.id!==id);renderExams();saveData();toast('🗑 মুছে ফেলা হয়েছে');
+}
+
+// ── HABITS (week-based, today-aware) ──
+function calcStreak(habit){
+  // count consecutive days from today backwards where habit.week[key]=1
+  let streak=0;
+  const today=new Date();
+  for(let i=0;i<60;i++){
+    const d=new Date(today);d.setDate(today.getDate()-i);
+    const k=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    if(habit.week[k])streak++;
+    else if(i>0)break; // allow today to be unchecked
+  }
+  return streak;
+}
+function renderHabits(){
+  const el=document.getElementById('habitList');
+  if(!habits.length){
+    el.innerHTML=`<div class="empty-state" style="padding:16px 0"><div class="empty-icon">⚡</div><div class="empty-text">কোনো habit নেই।<br>নিচে বাটন চাপো।</div></div>`;return;
+  }
+  const wks=weekKeys();
+  const ti=todayIdx(); // 0=Mon .. 6=Sun
+  el.innerHTML=habits.map(h=>{
+    const streak=calcStreak(h);
+    const dots=wks.map((k,i)=>{
+      const isDone=!!h.week[k];
+      const isToday=i===ti;
+      return `<div class="h-day-col">
+        <div class="h-dot${isDone?' on':''}${isToday?' today-dot':''}" onclick="toggleDot('${h.id}','${k}',this)">${isDone?'✓':''}</div>
+        <div class="day-lbl${isToday?' today-lbl':''}">${BN_DAYS[i]}</div>
+      </div>`;
+    }).join('');
+    return `<div class="habit-item">
+      <div class="habit-top">
+        <div class="habit-icon" style="background:${h.color}">${h.emoji}</div>
+        <div class="habit-info">
+          <div class="habit-name">${h.name}</div>
+          <div class="habit-target">${h.target}</div>
+        </div>
+        ${streak>1?`<div class="habit-streak">🔥 ${streak}</div>`:''}
+      </div>
+      <div class="habit-grid">${dots}</div>
+      <div class="habit-acts">
+        <button class="h-act h-edit" onclick="openHabitSheet('${h.id}')">✏️ এডিট</button>
+        <button class="h-act h-del"  onclick="delHabit('${h.id}')">🗑 মুছো</button>
+      </div>
+    </div>`;
+  }).join('');
+  updateHeaderStreak();
+}
+function toggleDot(id,dateKey,el){
+  const h=habits.find(x=>String(x.id)===String(id));if(!h)return;
+  if(!h.week)h.week={};
+  h.week[dateKey]=h.week[dateKey]?0:1;
+  el.classList.toggle('on',!!h.week[dateKey]);
+  el.textContent=h.week[dateKey]?'✓':'';
+  saveData();updateHeaderStreak();
+}
+function updateHeaderStreak(){
+  // Overall streak = max individual streak
+  const maxS=habits.reduce((m,h)=>Math.max(m,calcStreak(h)),0);
+  document.getElementById('headerStreak').textContent=maxS;
+}
+function delHabit(id){
+  if(!confirm('এই habit মুছে ফেলবে?'))return;
+  habits=habits.filter(h=>String(h.id)!==String(id));renderHabits();saveData();toast('🗑 Habit মুছে ফেলা হয়েছে');
+}
+
+// ── PROGRESS ──
+function updateProgress(){
+  const avg=exams.length?Math.round(exams.reduce((s,e)=>s+e.readiness,0)/exams.length):null;
+  const p=avg!==null?avg+'%':'—';
+  const msg=avg===null?'Exam যোগ করো':avg>=80?'দারুণ! 🎉':avg>=50?'ভালো যাচ্ছে 🚀':'আরো পড়তে হবে 💪';
+  document.getElementById('hPct').textContent=avg!==null?avg:'—';
+  document.getElementById('hBar').style.width=(avg||0)+'%';
+  document.getElementById('hMsg').textContent=msg;
+  document.getElementById('ovBig').textContent=p;
+  document.getElementById('ovMsg').textContent=msg;
+  document.getElementById('radialT').textContent=p;
+  const circ=213.6;
+  document.getElementById('radialC').setAttribute('stroke-dashoffset',avg!==null?circ-(circ*avg/100):circ);
+
+  // Subject breakdown
+  const allSubjs=getAllSubjects();
+  document.getElementById('subjProgress').innerHTML=allSubjs.map(s=>{
+    const sub=exams.filter(e=>e.subject===s.key);
+    if(!sub.length)return'';
+    const pc=Math.round(sub.reduce((a,e)=>a+e.readiness,0)/sub.length);
+    return `<div class="subj-row">
+      <div class="subj-dot" style="background:${s.color}"></div>
+      <div class="subj-name">${s.label}</div>
+      <div class="subj-bar"><div class="subj-fill" style="width:${pc}%;background:${s.color}"></div></div>
+      <div class="subj-pct">${pc}%</div>
+    </div>`;
+  }).join('');
+
+  // Stats
+  const doneCount=exams.filter(e=>e.status==='done').length;
+  const revisedCount=exams.filter(e=>e.revised).length;
+  const urgentCount=exams.filter(e=>{const dl=daysLeft(e.date);return dl!==null&&dl>=0&&dl<=3;}).length;
+  document.getElementById('statsGrid').innerHTML=`
+    <div class="stat-box"><div class="stat-num">${exams.length}</div><div class="stat-label">মোট পরীক্ষা</div></div>
+    <div class="stat-box"><div class="stat-num" style="color:var(--accent)">${doneCount}</div><div class="stat-label">প্রস্তুতি শেষ</div></div>
+    <div class="stat-box"><div class="stat-num" style="color:var(--sky)">${revisedCount}</div><div class="stat-label">রিভাইজড</div></div>
+    <div class="stat-box"><div class="stat-num" style="color:var(--warn)">${urgentCount}</div><div class="stat-label">জরুরি (৩ দিন)</div></div>
+  `;
+}
+
+// ── NAV ──
+function showSection(n){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));
+  document.getElementById('sec-'+n).classList.add('active');
+  document.getElementById('nav-'+n)?.classList.add('active');
+  document.getElementById('scrollArea').scrollTop=0;
+  document.getElementById('fabBtn').style.display=n==='home'?'flex':'none';
+}
+
+// ── SHEETS ──
+let activeSheet=null;
+function openSheet(id){if(activeSheet)closeSheet();activeSheet=id;document.getElementById('overlay').classList.add('open');document.getElementById(id).classList.add('open');}
+function closeSheet(){document.getElementById('overlay').classList.remove('open');if(activeSheet){document.getElementById(activeSheet).classList.remove('open');activeSheet=null;}}
+
+// ── EXAM SHEET ──
+let editEID=null;
+function openExamSheet(id){
+  editEID=id;
+  const e=id!==null?exams.find(x=>x.id===id):null;
+  document.getElementById('eSheetTitle').textContent=e?'পরীক্ষা এডিট করো':'নতুন পরীক্ষা যোগ করো';
+  document.getElementById('eDelBtn').style.display=e?'block':'none';
+  document.getElementById('eSaveBtn').textContent=e?'আপডেট করো ✓':'পরীক্ষা সেভ করো ✓';
+  document.getElementById('eDate').value=e?e.date:new Date().toISOString().slice(0,10);
+  document.getElementById('eStat').value=e?e.status:'pending';
+  document.getElementById('eTopic').value=e?e.topic:'';
+  document.getElementById('eRead').value=e?e.readiness:50;
+  document.getElementById('eRV').textContent=e?e.readiness:50;
+  document.getElementById('eNotes').value=e?e.notes||'':'';
+  fillSubjectSelect('eSubj',e?e.subject:activeSubjKeys[0]||'math');
+  openSheet('examSheet');
+}
+function saveExam(){
+  const topic=document.getElementById('eTopic').value.trim();
+  if(!topic){toast('⚠️ টপিক লিখতে হবে');return;}
+  const obj={
+    date:document.getElementById('eDate').value,
+    subject:document.getElementById('eSubj').value,
+    topic,
+    status:document.getElementById('eStat').value,
+    readiness:parseInt(document.getElementById('eRead').value),
+    notes:document.getElementById('eNotes').value.trim()
+  };
+  if(editEID!==null){
+    const i=exams.findIndex(e=>e.id===editEID);
+    exams[i]={...exams[i],...obj};
+    toast('✅ আপডেট হয়েছে!');
+  } else {
+    exams.push({id:eID++,revised:false,...obj});
+    toast('✅ পরীক্ষা যোগ হয়েছে!');
+  }
+  renderExams();saveData();closeSheet();
+}
+function deleteFromExamSheet(){closeSheet();setTimeout(()=>delExam(editEID),200);}
+
+// ── HABIT SHEET ──
+let editHID=null,pEmoji='📖',pColor='#E8F4FC';
+function openHabitSheet(id){
+  editHID=id;
+  const h=id!==null?habits.find(x=>String(x.id)===String(id)):null;
+  document.getElementById('hSheetTitle').textContent=h?'Habit এডিট করো':'নতুন Habit';
+  document.getElementById('hDelBtn').style.display=h?'block':'none';
+  document.getElementById('hSaveBtn').textContent=h?'আপডেট করো ✓':'Habit সেভ করো ✓';
+  document.getElementById('hName').value=h?h.name:'';
+  document.getElementById('hTarget').value=h?h.target:'';
+  pEmoji=h?h.emoji:'📖';pColor=h?h.color:'#E8F4FC';
+  document.querySelectorAll('.e-opt').forEach(e=>e.classList.toggle('sel',e.dataset.e===pEmoji));
+  document.querySelectorAll('.c-opt').forEach(c=>c.classList.toggle('sel',c.dataset.c===pColor));
+  openSheet('habitSheet');
+}
+function saveHabit(){
+  const name=document.getElementById('hName').value.trim();
+  if(!name){toast('⚠️ নাম লিখতে হবে');return;}
+  const obj={name,target:document.getElementById('hTarget').value.trim()||'প্রতিদিন',emoji:pEmoji,color:pColor};
+  if(editHID!==null){
+    const i=habits.findIndex(h=>String(h.id)===String(editHID));
+    habits[i]={...habits[i],...obj};
+    toast('✅ আপডেট হয়েছে!');
+  } else {
+    habits.push({id:hID++,week:{},...obj});
+    toast('✅ Habit যোগ হয়েছে!');
+  }
+  renderHabits();saveData();closeSheet();
+}
+function deleteFromHabitSheet(){closeSheet();setTimeout(()=>delHabit(editHID),200);}
+function pickE(el){pEmoji=el.dataset.e;document.querySelectorAll('.e-opt').forEach(e=>e.classList.toggle('sel',e===el));}
+function pickC(el){pColor=el.dataset.c;document.querySelectorAll('.c-opt').forEach(c=>c.classList.toggle('sel',c===el));}
+
+// ── SUBJECT MANAGER ──
+function openSubjSheet(){
+  tempActiveKeys=[...activeSubjKeys];
+  tempCustomSubjs=customSubjects.map(s=>({...s}));
+  renderSubjSheet();
+  openSheet('subjSheet');
+}
+function renderSubjSheet(){
+  // Builtin checkboxes
+  document.getElementById('builtinSubjList').innerHTML=BUILTIN_SUBJS.map(s=>{
+    const checked=tempActiveKeys.includes(s.key);
+    return `<label style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);cursor:pointer;">
+      <input type="checkbox" ${checked?'checked':''} onchange="toggleBuiltinSubj('${s.key}',this.checked)" style="width:16px;height:16px;accent-color:var(--accent);">
+      <span style="font-size:13px;color:var(--ink);font-weight:600;">${s.label}</span>
+    </label>`;
+  }).join('');
+  // Custom tags
+  document.getElementById('customSubjList').innerHTML=tempCustomSubjs.map(s=>`
+    <div class="cs-tag">${s.label}<button onclick="removeCustomSubj('${s.key}')">×</button></div>
+  `).join('');
+}
+function toggleBuiltinSubj(key,checked){
+  if(checked){if(!tempActiveKeys.includes(key))tempActiveKeys.push(key);}
+  else{tempActiveKeys=tempActiveKeys.filter(k=>k!==key);}
+}
+function addCustomSubj(){
+  const inp=document.getElementById('newSubjInput');
+  const name=inp.value.trim();
+  if(!name)return;
+  const key='custom_'+Date.now();
+  tempCustomSubjs.push({key,label:name});
+  inp.value='';
+  renderSubjSheet();
+}
+function removeCustomSubj(key){
+  tempCustomSubjs=tempCustomSubjs.filter(s=>s.key!==key);
+  renderSubjSheet();
+}
+function applySubjects(){
+  if(!tempActiveKeys.length&&!tempCustomSubjs.length){toast('⚠️ অন্তত একটি বিষয় রাখো');return;}
+  activeSubjKeys=[...tempActiveKeys];
+  customSubjects=[...tempCustomSubjs];
+  saveData();
+  fillSubjectSelect('eSubj');
+  toast('✅ বিষয় আপডেট হয়েছে');
+  closeSheet();
+  renderExams();
+}
+
+// ── NOTIFICATIONS ──
+function toggleNotif(){
+  const toggle=document.getElementById('notifToggle');
+  const slider=document.getElementById('notifSlider');
+  const row=document.getElementById('notifTimeRow');
+  const status=document.getElementById('notifStatus');
+  if(toggle.checked){
+    if('Notification' in window){
+      Notification.requestPermission().then(p=>{
+        if(p==='granted'){
+          slider.style.background='var(--accent)';
+          row.style.display='block';
+          status.textContent='✅ নোটিফিকেশন চালু আছে';
+          saveNotifSettings();
+          scheduleNotif();
+          toast('🔔 নোটিফিকেশন চালু হয়েছে');
+        } else {
+          toggle.checked=false;
+          slider.style.background='var(--border)';
+          status.textContent='❌ Browser permission দাও';
+          toast('⚠️ Browser-এ permission দিতে হবে');
+        }
+      });
+    } else {
+      toggle.checked=false;
+      status.textContent='এই browser-এ notification কাজ করে না';
+    }
+  } else {
+    slider.style.background='var(--border)';
+    row.style.display='none';
+    status.textContent='নোটিফিকেশন বন্ধ আছে';
+    localStorage.setItem('st_notif','0');
+    toast('🔕 নোটিফিকেশন বন্ধ');
+  }
+}
+function saveNotifSettings(){
+  const t=document.getElementById('notifTime').value;
+  localStorage.setItem('st_notif','1');
+  localStorage.setItem('st_notif_time',t);
+}
+function scheduleNotif(){
+  // Use setTimeout to schedule today's notification if time hasn't passed
+  const t=localStorage.getItem('st_notif_time')||'20:00';
+  const [hh,mm]=t.split(':').map(Number);
+  const now=new Date();
+  const sched=new Date();sched.setHours(hh,mm,0,0);
+  if(sched>now){
+    const ms=sched-now;
+    setTimeout(()=>{
+      if(Notification.permission==='granted'){
+        const urgent=exams.filter(e=>{const dl=daysLeft(e.date);return dl!==null&&dl>=0&&dl<=3;});
+        const msg=urgent.length?`⚠️ ${urgent.length}টি পরীক্ষা ৩ দিনের মধ্যে!`:'আজকের study habit check করো!';
+        new Notification('Study Tracker 📚',{body:msg,icon:''});
+      }
+    },ms);
+  }
+}
+function loadNotifState(){
+  const on=localStorage.getItem('st_notif')==='1';
+  const t=localStorage.getItem('st_notif_time')||'20:00';
+  const toggle=document.getElementById('notifToggle');
+  const slider=document.getElementById('notifSlider');
+  const row=document.getElementById('notifTimeRow');
+  const status=document.getElementById('notifStatus');
+  if(on&&Notification.permission==='granted'){
+    toggle.checked=true;
+    slider.style.background='var(--accent)';
+    row.style.display='block';
+    document.getElementById('notifTime').value=t;
+    status.textContent='✅ নোটিফিকেশন চালু আছে';
+    scheduleNotif();
+  }
+}
+
+// ── TOAST ──
+let tT;
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tT);tT=setTimeout(()=>t.classList.remove('show'),2400);}
+
+// ── INIT ──
+loadData();
+renderExams();
+renderHabits();
+renderTodayBanner();
+renderQuote();
+loadProfile();
+loadNotifState();
+fillSubjectSelect('eSubj');
+
+// Subject manage button in exam sheet header (add below s-title-row)
+document.querySelector('#examSheet .s-title-row').insertAdjacentHTML('beforeend',
+  `<button onclick="closeSheet();setTimeout(openSubjSheet,200)" style="background:var(--surface2);border:1.5px solid var(--border);color:var(--ink2);font-size:11px;font-weight:700;padding:5px 9px;border-radius:8px;cursor:pointer;font-family:var(--font-bn);">⚙ বিষয়</button>`
+);
+</script>
+</body>
+</html>
